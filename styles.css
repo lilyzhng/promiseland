@@ -1,34 +1,34 @@
-.northstar-container {
+.promiseland-container {
 	padding: 0;
 	overflow-y: hidden;
 	height: 100%;
 }
 
-.northstar-board {
+.promiseland-board {
 	padding: 12px;
 }
 
 /* Header */
-.northstar-header {
+.promiseland-header {
 	margin-bottom: 12px;
 	padding-bottom: 8px;
 	border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.northstar-title-row {
+.promiseland-title-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
 
-.northstar-title-row h4 {
+.promiseland-title-row h4 {
 	margin: 0;
 	font-size: 1em;
 	font-weight: 600;
 	color: var(--text-normal);
 }
 
-.northstar-refresh-btn {
+.promiseland-refresh-btn {
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -39,19 +39,19 @@
 	align-items: center;
 }
 
-.northstar-refresh-btn:hover {
+.promiseland-refresh-btn:hover {
 	color: var(--text-normal);
 	background: var(--background-modifier-hover);
 }
 
-.northstar-stats {
+.promiseland-stats {
 	font-size: 0.8em;
 	color: var(--text-muted);
 	margin-top: 4px;
 }
 
 /* Empty state */
-.northstar-empty {
+.promiseland-empty {
 	color: var(--text-muted);
 	font-size: 0.85em;
 	text-align: center;
@@ -60,19 +60,19 @@
 }
 
 /* Topic sections */
-.northstar-topics {
+.promiseland-topics {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 }
 
-.northstar-topic-section {
+.promiseland-topic-section {
 	border-radius: 6px;
 	background: var(--background-secondary);
 	overflow: hidden;
 }
 
-.northstar-topic-header {
+.promiseland-topic-header {
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -85,29 +85,29 @@
 	background: var(--background-secondary);
 }
 
-.northstar-topic-header:hover {
+.promiseland-topic-header:hover {
 	background: var(--background-modifier-hover);
 }
 
-.northstar-chevron {
+.promiseland-chevron {
 	display: flex;
 	align-items: center;
 	transition: transform 150ms ease;
 	color: var(--text-muted);
 }
 
-.northstar-chevron.is-collapsed {
+.promiseland-chevron.is-collapsed {
 	transform: rotate(-90deg);
 }
 
-.northstar-topic-tag {
+.promiseland-topic-tag {
 	font-weight: 600;
 	font-size: 0.9em;
 	color: var(--text-accent);
 	flex: 1;
 }
 
-.northstar-topic-count {
+.promiseland-topic-count {
 	font-size: 0.75em;
 	color: var(--text-muted);
 	background: var(--background-primary);
@@ -116,11 +116,11 @@
 }
 
 /* Task list */
-.northstar-list {
+.promiseland-list {
 	padding: 2px 0 6px 0;
 }
 
-.northstar-item {
+.promiseland-item {
 	display: flex;
 	align-items: flex-start;
 	gap: 6px;
@@ -129,29 +129,29 @@
 	line-height: 1.4;
 }
 
-.northstar-item:hover {
+.promiseland-item:hover {
 	background: var(--background-modifier-hover);
 }
 
-.northstar-item.is-completed .northstar-text {
+.promiseland-item.is-completed .promiseland-text {
 	text-decoration: line-through;
 	opacity: 0.5;
 	color: var(--text-muted);
 }
 
-.northstar-checkbox {
+.promiseland-checkbox {
 	margin-top: 2px;
 	flex-shrink: 0;
 	cursor: pointer;
 }
 
-.northstar-text {
+.promiseland-text {
 	flex: 1;
 	color: var(--text-normal);
 	word-break: break-word;
 }
 
-.northstar-meta {
+.promiseland-meta {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
@@ -159,7 +159,7 @@
 	flex-shrink: 0;
 }
 
-.northstar-source-badge {
+.promiseland-source-badge {
 	font-size: 0.75em;
 	color: var(--text-muted);
 	background: var(--background-primary);
@@ -169,18 +169,18 @@
 	white-space: nowrap;
 }
 
-.northstar-source-badge:hover {
+.promiseland-source-badge:hover {
 	color: var(--text-accent);
 	background: var(--background-modifier-hover);
 }
 
-.northstar-date-badge {
+.promiseland-date-badge {
 	font-size: 0.7em;
 	color: var(--text-faint);
 	white-space: nowrap;
 }
 
-.northstar-remove-btn {
+.promiseland-remove-btn {
 	flex-shrink: 0;
 	font-size: 1.2em;
 	color: var(--text-muted);
@@ -191,13 +191,13 @@
 	user-select: none;
 }
 
-.northstar-remove-btn:hover {
+.promiseland-remove-btn:hover {
 	color: var(--text-error);
 	background: var(--background-modifier-error);
 }
 
 /* Editor "+" button */
-.northstar-add-button {
+.promiseland-add-button {
 	display: inline-block;
 	margin-left: 8px;
 	padding: 1px 6px;
@@ -212,17 +212,17 @@
 	transition: opacity 150ms ease;
 }
 
-.northstar-add-button:hover {
+.promiseland-add-button:hover {
 	opacity: 1;
 }
 
 /* Feedback-specific styles */
 .acta-feedback-item {
-	/* Inherits from .northstar-item */
+	/* Inherits from .promiseland-item */
 }
 
 .acta-feedback-text {
-	/* Inherits from .northstar-text */
+	/* Inherits from .promiseland-text */
 }
 
 /* Negative Feedback Board specific styles */
@@ -230,7 +230,7 @@
 	/* Optional: Add a subtle indicator for negative feedback board */
 }
 
-.acta-negative-feedback-board .northstar-header {
+.acta-negative-feedback-board .promiseland-header {
 	/* Subtle color difference for negative feedback board header */
 	border-bottom-color: var(--background-modifier-border-hover);
 }
@@ -246,14 +246,14 @@
 }
 
 /* Optional: Different accent color for negative feedback topics */
-.acta-negative-feedback-board .northstar-topic-tag {
+.acta-negative-feedback-board .promiseland-topic-tag {
 	color: var(--text-normal);
 	opacity: 0.9;
 }
 
-/* ========== North Star Board ========== */
+/* ========== Promise Land Board ========== */
 
-.acta-northstar-board {
+.acta-promiseland-board {
 	padding: 12px;
 	display: flex;
 	flex-direction: column;
@@ -262,33 +262,33 @@
 }
 
 /* Header */
-.acta-northstar-header {
+.acta-promiseland-header {
 	margin-bottom: 12px;
 	padding-bottom: 8px;
 	border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.acta-northstar-title-row {
+.acta-promiseland-title-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
 
-.acta-northstar-title-row h4 {
+.acta-promiseland-title-row h4 {
 	margin: 0;
 	font-size: 1em;
 	font-weight: 600;
 	color: var(--text-normal);
 }
 
-.acta-northstar-btn-group {
+.acta-promiseland-btn-group {
 	display: flex;
 	gap: 4px;
 	align-items: center;
 }
 
-.acta-northstar-run-btn,
-.acta-northstar-refresh-btn {
+.acta-promiseland-run-btn,
+.acta-promiseland-refresh-btn {
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -299,15 +299,15 @@
 	align-items: center;
 }
 
-.acta-northstar-run-btn:hover,
-.acta-northstar-refresh-btn:hover {
+.acta-promiseland-run-btn:hover,
+.acta-promiseland-refresh-btn:hover {
 	color: var(--text-normal);
 	background: var(--background-modifier-hover);
 }
 
 /* Empty states */
-.acta-northstar-empty,
-.acta-northstar-no-assessment {
+.acta-promiseland-empty,
+.acta-promiseland-no-assessment {
 	color: var(--text-muted);
 	font-size: 0.85em;
 	text-align: center;
@@ -315,7 +315,7 @@
 	line-height: 1.5;
 }
 
-.acta-northstar-set-goal-btn {
+.acta-promiseland-set-goal-btn {
 	margin-top: 12px;
 	padding: 8px 16px;
 	background: var(--interactive-accent);
@@ -327,18 +327,18 @@
 	font-weight: 500;
 }
 
-.acta-northstar-set-goal-btn:hover {
+.acta-promiseland-set-goal-btn:hover {
 	opacity: 0.9;
 }
 
-.acta-northstar-warning {
+.acta-promiseland-warning {
 	color: var(--text-error, #e74c3c);
 	font-size: 0.8em;
 	margin-top: 8px;
 }
 
 /* Goals section */
-.acta-northstar-goals-section {
+.acta-promiseland-goals-section {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -346,7 +346,7 @@
 }
 
 /* Add goal button */
-.acta-northstar-add-goal-btn {
+.acta-promiseland-add-goal-btn {
 	width: 36px;
 	height: 36px;
 	border: 2px dashed var(--background-modifier-border);
@@ -362,14 +362,14 @@
 	margin-top: 4px;
 }
 
-.acta-northstar-add-goal-btn:hover {
+.acta-promiseland-add-goal-btn:hover {
 	border-color: var(--text-accent);
 	color: var(--text-accent);
 	background: var(--background-modifier-hover);
 }
 
 /* Goal card */
-.acta-northstar-goal-card {
+.acta-promiseland-goal-card {
 	border-left: 3px solid var(--text-accent);
 	background: var(--background-secondary);
 	border-radius: 6px;
@@ -378,23 +378,23 @@
 	transition: border-color 0.15s ease, opacity 0.15s ease;
 }
 
-.acta-northstar-goal-card.is-active {
+.acta-promiseland-goal-card.is-active {
 	border-left-color: var(--text-accent);
 }
 
 /* Carousel */
-.acta-northstar-goal-carousel {
+.acta-promiseland-goal-carousel {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
 
-.acta-northstar-carousel-card-wrapper {
+.acta-promiseland-carousel-card-wrapper {
 	flex: 1;
 	min-width: 0;
 }
 
-.acta-northstar-carousel-arrow {
+.acta-promiseland-carousel-arrow {
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -406,23 +406,23 @@
 	line-height: 1;
 }
 
-.acta-northstar-carousel-arrow:hover {
+.acta-promiseland-carousel-arrow:hover {
 	opacity: 1;
 }
 
-.acta-northstar-carousel-arrow:disabled {
+.acta-promiseland-carousel-arrow:disabled {
 	opacity: 0.2;
 	cursor: default;
 }
 
-.acta-northstar-carousel-dots {
+.acta-promiseland-carousel-dots {
 	display: flex;
 	justify-content: center;
 	gap: 6px;
 	margin-top: 6px;
 }
 
-.acta-northstar-carousel-dot {
+.acta-promiseland-carousel-dot {
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
@@ -431,19 +431,48 @@
 	transition: background 0.15s ease;
 }
 
-.acta-northstar-carousel-dot.is-active {
+.acta-promiseland-carousel-dot.is-active {
 	background: var(--text-accent);
 }
 
-.acta-northstar-goal-text {
+.acta-promiseland-goal-top-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.acta-promiseland-complete-btn {
+	flex-shrink: 0;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	margin-top: 1px;
+	border: none;
+	background: none;
+	color: var(--text-faint);
+	cursor: pointer;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.15s, background 0.15s;
+}
+
+.acta-promiseland-complete-btn:hover {
+	color: var(--text-accent);
+	background: var(--background-modifier-hover);
+}
+
+.acta-promiseland-goal-text {
 	font-size: 0.95em;
 	font-weight: 500;
 	color: var(--text-normal);
-	margin-bottom: 8px;
 	line-height: 1.4;
+	flex: 1;
 }
 
-.acta-northstar-goal-context-link {
+.acta-promiseland-goal-context-link {
 	display: inline;
 	font-size: 0.75em;
 	font-weight: 400;
@@ -452,18 +481,18 @@
 	vertical-align: baseline;
 }
 
-.acta-northstar-goal-context-link:hover {
+.acta-promiseland-goal-context-link:hover {
 	color: var(--text-accent);
 	text-decoration: underline;
 }
 
-.acta-northstar-goal-badges {
+.acta-promiseland-goal-badges {
 	display: flex;
 	gap: 6px;
 	flex-wrap: wrap;
 }
 
-.acta-northstar-badge {
+.acta-promiseland-badge {
 	font-size: 0.7em;
 	color: var(--text-muted);
 	background: var(--background-primary);
@@ -471,117 +500,117 @@
 	border-radius: 10px;
 }
 
-.acta-northstar-badge-phase {
+.acta-promiseland-badge-phase {
 	color: var(--text-accent);
 	text-transform: capitalize;
 }
 
-.acta-northstar-badge-urgent {
+.acta-promiseland-badge-urgent {
 	color: var(--text-error, #e74c3c);
 }
 
 /* Score display */
-.acta-northstar-score-section {
+.acta-promiseland-score-section {
 	text-align: center;
 	padding: 16px 0;
 	margin-bottom: 12px;
 }
 
-.acta-northstar-score {
+.acta-promiseland-score {
 	display: flex;
 	align-items: baseline;
 	justify-content: center;
 	gap: 2px;
 }
 
-.acta-northstar-score-number {
+.acta-promiseland-score-number {
 	font-size: 2.5em;
 	font-weight: 700;
 	line-height: 1;
 }
 
-.acta-northstar-score-good {
+.acta-promiseland-score-good {
 	color: var(--text-success, #27ae60);
 }
 
-.acta-northstar-score-mid {
+.acta-promiseland-score-mid {
 	color: var(--text-warning, #f39c12);
 }
 
-.acta-northstar-score-low {
+.acta-promiseland-score-low {
 	color: var(--text-error, #e74c3c);
 }
 
-.acta-northstar-score-label {
+.acta-promiseland-score-label {
 	font-size: 1em;
 	color: var(--text-muted);
 }
 
-.acta-northstar-score-date {
+.acta-promiseland-score-date {
 	font-size: 0.75em;
 	color: var(--text-faint);
 	margin-top: 4px;
 }
 
 /* Signal breakdown */
-.acta-northstar-breakdown {
+.acta-promiseland-breakdown {
 	margin-bottom: 12px;
 }
 
-.acta-northstar-breakdown h5 {
+.acta-promiseland-breakdown h5 {
 	margin: 0 0 8px 0;
 	font-size: 0.85em;
 	font-weight: 600;
 	color: var(--text-normal);
 }
 
-.acta-northstar-signal-row {
+.acta-promiseland-signal-row {
 	margin-bottom: 10px;
 }
 
-.acta-northstar-signal-label-row {
+.acta-promiseland-signal-label-row {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 3px;
 }
 
-.acta-northstar-signal-name {
+.acta-promiseland-signal-name {
 	font-size: 0.8em;
 	color: var(--text-normal);
 }
 
-.acta-northstar-signal-score {
+.acta-promiseland-signal-score {
 	font-size: 0.75em;
 	color: var(--text-muted);
 }
 
-.acta-northstar-bar-container {
+.acta-promiseland-bar-container {
 	height: 6px;
 	background: var(--background-modifier-border);
 	border-radius: 3px;
 	overflow: hidden;
 }
 
-.acta-northstar-bar {
+.acta-promiseland-bar {
 	height: 100%;
 	border-radius: 3px;
 	transition: width 300ms ease;
 }
 
-.acta-northstar-bar-good {
+.acta-promiseland-bar-good {
 	background: var(--text-success, #27ae60);
 }
 
-.acta-northstar-bar-mid {
+.acta-promiseland-bar-mid {
 	background: var(--text-warning, #f39c12);
 }
 
-.acta-northstar-bar-low {
+.acta-promiseland-bar-low {
 	background: var(--text-error, #e74c3c);
 }
 
-.acta-northstar-signal-reasoning {
+.acta-promiseland-signal-reasoning {
 	font-size: 0.75em;
 	color: var(--text-faint);
 	margin-top: 2px;
@@ -589,18 +618,18 @@
 }
 
 /* Drift indicators */
-.acta-northstar-drift {
+.acta-promiseland-drift {
 	margin-bottom: 12px;
 }
 
-.acta-northstar-drift h5 {
+.acta-promiseland-drift h5 {
 	margin: 0 0 6px 0;
 	font-size: 0.85em;
 	font-weight: 600;
 	color: var(--text-normal);
 }
 
-.acta-northstar-drift-item {
+.acta-promiseland-drift-item {
 	border-left: 2px solid var(--text-error, #e74c3c);
 	padding: 6px 10px;
 	margin-bottom: 4px;
@@ -612,18 +641,18 @@
 }
 
 /* Momentum indicators */
-.acta-northstar-momentum {
+.acta-promiseland-momentum {
 	margin-bottom: 12px;
 }
 
-.acta-northstar-momentum h5 {
+.acta-promiseland-momentum h5 {
 	margin: 0 0 6px 0;
 	font-size: 0.85em;
 	font-weight: 600;
 	color: var(--text-normal);
 }
 
-.acta-northstar-momentum-item {
+.acta-promiseland-momentum-item {
 	border-left: 2px solid var(--text-success, #27ae60);
 	padding: 6px 10px;
 	margin-bottom: 4px;
@@ -635,7 +664,7 @@
 }
 
 /* Loading state */
-.acta-northstar-loading {
+.acta-promiseland-loading {
 	text-align: center;
 	padding: 24px 12px;
 	color: var(--text-muted);
@@ -643,11 +672,11 @@
 }
 
 /* Cycle activity log */
-.acta-northstar-cycle-log {
+.acta-promiseland-cycle-log {
 	margin-bottom: 12px;
 }
 
-.acta-northstar-cycle-log h5 {
+.acta-promiseland-cycle-log h5 {
 	margin: 0 0 10px 0;
 	font-size: 0.8em;
 	font-weight: 600;
@@ -656,7 +685,7 @@
 	letter-spacing: 0.05em;
 }
 
-.acta-northstar-step {
+.acta-promiseland-step {
 	display: flex;
 	align-items: flex-start;
 	gap: 8px;
@@ -665,7 +694,7 @@
 	line-height: 1.4;
 }
 
-.acta-northstar-step-indicator {
+.acta-promiseland-step-indicator {
 	flex-shrink: 0;
 	width: 16px;
 	text-align: center;
@@ -673,73 +702,73 @@
 	margin-top: 1px;
 }
 
-.acta-northstar-step-content {
+.acta-promiseland-step-content {
 	flex: 1;
 	min-width: 0;
 }
 
-.acta-northstar-step-label {
+.acta-promiseland-step-label {
 	font-weight: 500;
 }
 
-.acta-northstar-step-detail {
+.acta-promiseland-step-detail {
 	color: var(--text-faint);
 	font-size: 0.9em;
 }
 
 /* Step states */
-.acta-northstar-step-pending .acta-northstar-step-indicator {
+.acta-promiseland-step-pending .acta-promiseland-step-indicator {
 	color: var(--text-faint);
 }
 
-.acta-northstar-step-pending .acta-northstar-step-label {
+.acta-promiseland-step-pending .acta-promiseland-step-label {
 	color: var(--text-faint);
 }
 
-.acta-northstar-step-running .acta-northstar-step-indicator {
+.acta-promiseland-step-running .acta-promiseland-step-indicator {
 	color: var(--text-accent);
 }
 
-.acta-northstar-step-running .acta-northstar-step-label {
+.acta-promiseland-step-running .acta-promiseland-step-label {
 	color: var(--text-normal);
 }
 
-@keyframes acta-northstar-pulse {
+@keyframes acta-promiseland-pulse {
 	0%, 100% { opacity: 1; }
 	50% { opacity: 0.4; }
 }
 
-.acta-northstar-step-running .acta-northstar-step-indicator {
-	animation: acta-northstar-pulse 1.2s ease-in-out infinite;
+.acta-promiseland-step-running .acta-promiseland-step-indicator {
+	animation: acta-promiseland-pulse 1.2s ease-in-out infinite;
 }
 
-.acta-northstar-step-done .acta-northstar-step-indicator {
+.acta-promiseland-step-done .acta-promiseland-step-indicator {
 	color: var(--text-success, #27ae60);
 }
 
-.acta-northstar-step-done .acta-northstar-step-label {
+.acta-promiseland-step-done .acta-promiseland-step-label {
 	color: var(--text-normal);
 }
 
-.acta-northstar-step-done .acta-northstar-step-detail {
+.acta-promiseland-step-done .acta-promiseland-step-detail {
 	color: var(--text-muted);
 }
 
-.acta-northstar-step-failed .acta-northstar-step-indicator {
+.acta-promiseland-step-failed .acta-promiseland-step-indicator {
 	color: var(--text-error, #e74c3c);
 }
 
-.acta-northstar-step-failed .acta-northstar-step-label {
+.acta-promiseland-step-failed .acta-promiseland-step-label {
 	color: var(--text-error, #e74c3c);
 }
 
-.acta-northstar-step-failed .acta-northstar-step-detail {
+.acta-promiseland-step-failed .acta-promiseland-step-detail {
 	color: var(--text-error, #e74c3c);
 }
 
 /* ========== Tinker Chat (Claudian-style) ========== */
 
-.acta-northstar-tinker-container {
+.acta-promiseland-tinker-container {
 	margin-top: 12px;
 	flex: 1;
 	display: flex;
@@ -748,7 +777,7 @@
 	overflow: hidden;
 }
 
-.acta-northstar-tinker-container h5 {
+.acta-promiseland-tinker-container h5 {
 	margin: 0 0 4px 0;
 	font-size: 0.8em;
 	font-weight: 600;
@@ -757,7 +786,7 @@
 }
 
 /* Messages */
-.acta-northstar-tinker-messages {
+.acta-promiseland-tinker-messages {
 	flex: 1;
 	overflow-y: auto;
 	display: flex;
@@ -767,38 +796,38 @@
 	min-height: 0;
 }
 
-.acta-northstar-tinker-messages::-webkit-scrollbar {
+.acta-promiseland-tinker-messages::-webkit-scrollbar {
 	width: 6px;
 }
 
-.acta-northstar-tinker-messages::-webkit-scrollbar-track {
+.acta-promiseland-tinker-messages::-webkit-scrollbar-track {
 	background: transparent;
 }
 
-.acta-northstar-tinker-messages::-webkit-scrollbar-thumb {
+.acta-promiseland-tinker-messages::-webkit-scrollbar-thumb {
 	background: var(--background-modifier-border);
 	border-radius: 3px;
 }
 
-.acta-northstar-tinker-messages::-webkit-scrollbar-thumb:hover {
+.acta-promiseland-tinker-messages::-webkit-scrollbar-thumb:hover {
 	background: var(--background-modifier-border-hover);
 }
 
 /* Message bubbles */
-.acta-northstar-tinker-bubble {
+.acta-promiseland-tinker-bubble {
 	padding: 10px 14px;
 	border-radius: 8px;
 	max-width: 95%;
 	word-wrap: break-word;
 }
 
-.acta-northstar-tinker-bubble-user {
+.acta-promiseland-tinker-bubble-user {
 	align-self: flex-end;
 	background: rgba(0, 0, 0, 0.3);
 	border-end-end-radius: 4px;
 }
 
-.acta-northstar-tinker-bubble-assistant {
+.acta-promiseland-tinker-bubble-assistant {
 	align-self: stretch;
 	width: 100%;
 	max-width: 100%;
@@ -807,39 +836,39 @@
 	padding: 10px 0;
 }
 
-.acta-northstar-tinker-bubble-content {
+.acta-promiseland-tinker-bubble-content {
 	line-height: 1.5;
 	user-select: text;
 	-webkit-user-select: text;
 	overflow-wrap: break-word;
 }
 
-.acta-northstar-tinker-bubble-content p {
+.acta-promiseland-tinker-bubble-content p {
 	margin: 0 0 8px 0;
 }
 
-.acta-northstar-tinker-bubble-content p:last-child {
+.acta-promiseland-tinker-bubble-content p:last-child {
 	margin-bottom: 0;
 }
 
-.acta-northstar-tinker-bubble-content ul,
-.acta-northstar-tinker-bubble-content ol {
+.acta-promiseland-tinker-bubble-content ul,
+.acta-promiseland-tinker-bubble-content ol {
 	margin: 8px 0;
 	padding-inline-start: 20px;
 }
 
-.acta-northstar-tinker-bubble-content strong {
+.acta-promiseland-tinker-bubble-content strong {
 	font-weight: 600;
 }
 
 /* Input container */
-.acta-northstar-input-container {
+.acta-promiseland-input-container {
 	position: relative;
 	flex-shrink: 0;
 	padding: 12px 0 8px 0;
 }
 
-.acta-northstar-input-box {
+.acta-promiseland-input-box {
 	display: flex;
 	flex-direction: column;
 	border: 1px solid var(--background-modifier-border);
@@ -848,12 +877,12 @@
 	min-height: 110px;
 }
 
-.acta-northstar-input-box:focus-within {
+.acta-promiseland-input-box:focus-within {
 	border-color: var(--interactive-accent);
 }
 
 /* Textarea */
-.acta-northstar-input {
+.acta-promiseland-input {
 	width: 100%;
 	flex: 1 1 0;
 	min-height: 60px;
@@ -870,24 +899,24 @@
 	overflow-y: auto;
 }
 
-.acta-northstar-input:hover,
-.acta-northstar-input:focus {
+.acta-promiseland-input:hover,
+.acta-promiseland-input:focus {
 	outline: none !important;
 	border: none !important;
 	background: transparent !important;
 	box-shadow: none !important;
 }
 
-.acta-northstar-input::placeholder {
+.acta-promiseland-input::placeholder {
 	color: var(--text-muted);
 }
 
-.acta-northstar-input:disabled {
+.acta-promiseland-input:disabled {
 	opacity: 0.5;
 }
 
 /* Input toolbar */
-.acta-northstar-input-toolbar {
+.acta-promiseland-input-toolbar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -896,11 +925,11 @@
 }
 
 /* Model selector (hover dropdown like Claudian) */
-.acta-northstar-model-selector {
+.acta-promiseland-model-selector {
 	position: relative;
 }
 
-.acta-northstar-model-btn {
+.acta-promiseland-model-btn {
 	display: flex;
 	align-items: center;
 	gap: 4px;
@@ -912,16 +941,16 @@
 	transition: color 0.2s ease;
 }
 
-.acta-northstar-model-btn:hover {
+.acta-promiseland-model-btn:hover {
 	color: var(--text-normal);
 }
 
-.acta-northstar-model-chevron {
+.acta-promiseland-model-chevron {
 	font-size: 8px;
 	line-height: 1;
 }
 
-.acta-northstar-model-dropdown {
+.acta-promiseland-model-dropdown {
 	position: absolute;
 	bottom: 100%;
 	left: 0;
@@ -941,12 +970,12 @@
 	transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-.acta-northstar-model-selector:hover .acta-northstar-model-dropdown {
+.acta-promiseland-model-selector:hover .acta-promiseland-model-dropdown {
 	opacity: 1;
 	visibility: visible;
 }
 
-.acta-northstar-model-option {
+.acta-promiseland-model-option {
 	padding: 4px 8px;
 	cursor: pointer;
 	font-size: 12px;
@@ -956,19 +985,19 @@
 	white-space: nowrap;
 }
 
-.acta-northstar-model-option:hover {
+.acta-promiseland-model-option:hover {
 	background: var(--background-modifier-hover);
 	color: var(--text-normal);
 }
 
-.acta-northstar-model-option.is-selected {
+.acta-promiseland-model-option.is-selected {
 	background: rgba(var(--interactive-accent-rgb, 58, 135, 209), 0.15);
 	color: var(--interactive-accent);
 	font-weight: 500;
 }
 
 /* Send button */
-.acta-northstar-send-btn {
+.acta-promiseland-send-btn {
 	background: transparent;
 	border: none;
 	cursor: pointer;
@@ -980,53 +1009,53 @@
 	transition: background 0.15s ease, color 0.15s ease;
 }
 
-.acta-northstar-send-btn:hover {
+.acta-promiseland-send-btn:hover {
 	background: var(--background-modifier-hover);
 	color: var(--text-normal);
 }
 
-.acta-northstar-send-btn.is-disabled {
+.acta-promiseland-send-btn.is-disabled {
 	opacity: 0.3;
 	cursor: not-allowed;
 }
 
-.acta-northstar-send-btn svg {
+.acta-promiseland-send-btn svg {
 	width: 16px;
 	height: 16px;
 }
 
 /* Typing indicator */
-.acta-northstar-tinker-typing {
+.acta-promiseland-tinker-typing {
 	align-self: flex-start;
 	display: flex;
 	gap: 4px;
 	padding: 10px 14px;
 }
 
-.acta-northstar-tinker-dot {
+.acta-promiseland-tinker-dot {
 	width: 6px;
 	height: 6px;
 	border-radius: 50%;
 	background: var(--text-muted);
-	animation: acta-northstar-tinker-bounce 1.4s ease-in-out infinite;
+	animation: acta-promiseland-tinker-bounce 1.4s ease-in-out infinite;
 }
 
-.acta-northstar-tinker-dot:nth-child(2) {
+.acta-promiseland-tinker-dot:nth-child(2) {
 	animation-delay: 0.2s;
 }
 
-.acta-northstar-tinker-dot:nth-child(3) {
+.acta-promiseland-tinker-dot:nth-child(3) {
 	animation-delay: 0.4s;
 }
 
-@keyframes acta-northstar-tinker-bounce {
+@keyframes acta-promiseland-tinker-bounce {
 	0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
 	30% { transform: translateY(-4px); opacity: 1; }
 }
 
 /* ========== @ Mention Dropdown ========== */
 
-.acta-northstar-mention-dropdown {
+.acta-promiseland-mention-dropdown {
 	position: absolute;
 	bottom: 100%;
 	left: 0;
@@ -1041,7 +1070,7 @@
 	margin-bottom: 4px;
 }
 
-.acta-northstar-mention-item {
+.acta-promiseland-mention-item {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -1051,16 +1080,16 @@
 	transition: background 0.1s ease;
 }
 
-.acta-northstar-mention-item:hover,
-.acta-northstar-mention-item.is-selected {
+.acta-promiseland-mention-item:hover,
+.acta-promiseland-mention-item.is-selected {
 	background: var(--background-modifier-hover);
 }
 
-.acta-northstar-mention-item.is-selected {
+.acta-promiseland-mention-item.is-selected {
 	background: rgba(var(--interactive-accent-rgb, 58, 135, 209), 0.15);
 }
 
-.acta-northstar-mention-name {
+.acta-promiseland-mention-name {
 	font-weight: 500;
 	color: var(--text-normal);
 	white-space: nowrap;
@@ -1068,7 +1097,7 @@
 	text-overflow: ellipsis;
 }
 
-.acta-northstar-mention-path {
+.acta-promiseland-mention-path {
 	font-size: 0.85em;
 	color: var(--text-faint);
 	white-space: nowrap;
@@ -1079,14 +1108,14 @@
 
 /* ========== File Chips (input area) ========== */
 
-.acta-northstar-file-chips {
+.acta-promiseland-file-chips {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	padding: 4px 10px;
 }
 
-.acta-northstar-file-chip {
+.acta-promiseland-file-chip {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
@@ -1097,7 +1126,7 @@
 	color: var(--interactive-accent);
 }
 
-.acta-northstar-file-chip-remove {
+.acta-promiseland-file-chip-remove {
 	cursor: pointer;
 	font-size: 1.1em;
 	line-height: 1;
@@ -1105,20 +1134,20 @@
 	transition: opacity 0.15s ease;
 }
 
-.acta-northstar-file-chip-remove:hover {
+.acta-promiseland-file-chip-remove:hover {
 	opacity: 1;
 }
 
 /* ========== Bubble Reference Chips ========== */
 
-.acta-northstar-bubble-refs {
+.acta-promiseland-bubble-refs {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	margin-bottom: 6px;
 }
 
-.acta-northstar-bubble-ref-chip {
+.acta-promiseland-bubble-ref-chip {
 	display: inline-block;
 	font-size: 0.75em;
 	padding: 1px 6px;
@@ -1128,7 +1157,7 @@
 }
 
 /* Error message */
-.acta-northstar-tinker-error {
+.acta-promiseland-tinker-error {
 	font-size: 0.85em;
 	color: var(--text-error, #e74c3c);
 	padding: 8px 10px;
@@ -1138,7 +1167,7 @@
 
 /* ========== Tool Steps (inline in chat) ========== */
 
-.acta-northstar-tool-step {
+.acta-promiseland-tool-step {
 	width: 100%;
 	padding: 8px 12px;
 	margin: 4px 0;
@@ -1152,7 +1181,7 @@
 	gap: 6px;
 }
 
-.acta-northstar-tool-substep {
+.acta-promiseland-tool-substep {
 	width: 100%;
 	display: flex;
 	align-items: center;
@@ -1161,22 +1190,22 @@
 	font-size: 0.9em;
 }
 
-.acta-northstar-tool-substep .acta-northstar-step-indicator {
+.acta-promiseland-tool-substep .acta-promiseland-step-indicator {
 	font-size: 0.8em;
 }
 
-.acta-northstar-tool-substep .acta-northstar-step-label {
+.acta-promiseland-tool-substep .acta-promiseland-step-label {
 	font-weight: 400;
 	color: var(--text-muted);
 }
 
-.acta-northstar-tool-substep.acta-northstar-step-done .acta-northstar-step-indicator {
+.acta-promiseland-tool-substep.acta-promiseland-step-done .acta-promiseland-step-indicator {
 	color: var(--text-success, #27ae60);
 }
 
 /* ========== Check-in Note Link (inline in chat) ========== */
 
-.acta-northstar-checkin-link {
+.acta-promiseland-checkin-link {
 	width: 100%;
 	margin: 6px 0;
 	padding: 10px 14px;
@@ -1191,21 +1220,21 @@
 	transition: background 150ms ease;
 }
 
-.acta-northstar-checkin-link:hover {
+.acta-promiseland-checkin-link:hover {
 	background: var(--background-modifier-hover);
 }
 
-.acta-northstar-checkin-score {
+.acta-promiseland-checkin-score {
 	font-weight: 700;
 	font-size: 1.1em;
 }
 
-.acta-northstar-checkin-label {
+.acta-promiseland-checkin-label {
 	color: var(--text-normal);
 	flex: 1;
 }
 
-.acta-northstar-checkin-open {
+.acta-promiseland-checkin-open {
 	color: var(--text-accent);
 	font-size: 0.85em;
 	white-space: nowrap;

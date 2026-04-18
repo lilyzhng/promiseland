@@ -43,16 +43,13 @@ export class PromiseLandObserver {
 		this.ensureDailyCheckpoint(dateStr);
 		onStep?.("checkpoint", `Daily checkpoint ready`);
 
-		onStep?.("tasks", "Scanning daily note for priority actions...");
-		const tasks = await this.extractPriorityTasksFromNote(dateStr);
-		const completedCount = tasks.filter(t => t.completed).length;
-		const deepWorkCount = tasks.filter(t => t.effort === "deep_work").length;
-		onStep?.("tasks", `Found ${tasks.length} priority actions (${completedCount} completed, ${deepWorkCount} deep work)`);
-
-		onStep?.("ships", "Scanning daily note for ships...");
-		const ships = await this.extractShipsFromNote(dateStr);
-		const shippedCount = ships.filter(s => s.completed).length;
-		onStep?.("ships", `Found ${ships.length} ships (${shippedCount} shipped)`);
+		// Read the full daily note content — this is the primary signal source
+		onStep?.("daily-note", "Reading daily note content...");
+		const rawNoteContent = await this.readDailyNoteContent(dateStr);
+		const noteLength = rawNoteContent ? rawNoteContent.length : 0;
+		onStep?.("daily-note", noteLength > 0
+			? `Read daily note (${Math.round(noteLength / 1000)}k chars)`
+			: `No daily note found for ${dateStr}`);
 
 		onStep?.("positive-feedback", "Scanning positive feedback...");
 		const positiveFeedback = this.extractPositiveFeedbackSignals(dateStr);
@@ -63,10 +60,6 @@ export class PromiseLandObserver {
 		onStep?.("negative-feedback", `Found ${negativeFeedback.length} negative feedback entries`);
 
 		const feedback = [...positiveFeedback, ...negativeFeedback];
-
-		onStep?.("reflections", "Scanning #promiseland reflections...");
-		const reflections = await this.extractReflections(dateStr);
-		onStep?.("reflections", `Found ${reflections.length} reflections`);
 
 		onStep?.("vault", "Checking vault activity...");
 		const vaultActivity = this.getVaultActivity(dateStr);
@@ -88,12 +81,33 @@ export class PromiseLandObserver {
 
 		return {
 			date: dateStr,
-			tasks,
-			ships,
+			tasks: [],
+			ships: [],
 			feedback,
-			reflections,
+			reflections: [],
 			vaultActivity,
+			rawNoteContent: rawNoteContent || undefined,
 		};
+	}
+
+	/**
+	 * Read the full daily note content. The LLM will extract signals from it.
+	 */
+	private async readDailyNoteContent(dateStr: string): Promise<string | null> {
+		const compactDate = dateStr.replace(/-/g, "");
+		const files = this.app.vault.getMarkdownFiles();
+
+		for (const file of files) {
+			if (!file.path.includes(compactDate)) continue;
+			const content = await this.app.vault.cachedRead(file);
+			// Cap at 15k chars to stay within LLM context budget
+			if (content.length > 15000) {
+				return content.substring(0, 15000) + "\n\n... (note truncated at 15k chars)";
+			}
+			return content;
+		}
+
+		return null;
 	}
 
 	/**
@@ -201,6 +215,7 @@ export class PromiseLandObserver {
 				}
 
 				if (inShipsSection) {
+					// Format 1: Checkbox items (- [x] task)
 					const checkboxMatch = line.match(/^\s*-\s+\[([ xX])\]\s+(.*)/i);
 					if (checkboxMatch) {
 						const completed = checkboxMatch[1].toLowerCase() === "x";
@@ -212,6 +227,31 @@ export class PromiseLandObserver {
 							.trim();
 						if (title.length > 0) {
 							ships.push({ title, completed });
+						}
+					}
+
+					// Format 2: Markdown table rows with Status column
+					// Matches: | # | Task | Category | Status | Notes |
+					if (!checkboxMatch && line.startsWith("|") && !line.match(/^\|\s*[-:]+/) && !line.match(/^\|\s*#\s*\|/)) {
+						const cells = line.split("|").slice(1, -1).map(c => c.trim());
+						if (cells.length >= 4) {
+							const taskCell = cells[1];
+							const statusCell = cells[3];
+							const isCompleted = /✅|shipped|done|complete/i.test(statusCell);
+							const isFailed = /❌|failed|crashed/i.test(statusCell);
+							const isDropped = /🚫|dropped|skipped/i.test(statusCell);
+							if (isCompleted || isFailed || isDropped) {
+								const title = taskCell
+									.replace(/`/g, "")
+									.replace(/#\w+/g, "")
+									.replace(/\[\[.*?\]\]/g, "")
+									.replace(/\[.*?\]\(.*?\)/g, "")
+									.replace(/\s+/g, " ")
+									.trim();
+								if (title.length > 0) {
+									ships.push({ title, completed: isCompleted });
+								}
+							}
 						}
 					}
 				}

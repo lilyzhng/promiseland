@@ -86,9 +86,9 @@ The user's philosophy is **Build -> Ship, Repeat**. Score today's alignment on e
 ## Evidence Sources
 
 You will receive:
-- PRIORITY ACTIONS — tasks the user set for today (may be empty)
-- SHIP ITEMS — things explicitly marked as shipped
-- VAULT ACTIVITY — git diffs showing file changes
+- DAILY NOTE — the user's full daily note. Read it carefully. Tasks, ships, progress, and reflections may appear in ANY format: checkboxes, tables, bullet points, prose, or mixed. Extract what was accomplished by understanding the content, not by looking for a specific format.
+- VAULT ACTIVITY — git diffs showing file changes across the vault
+- FEEDBACK — positive/negative feedback entries
 - CONVERSATION CONTEXT — excerpts from Tinker coaching chat. This is critical — it captures work outside the vault (demos, submissions, coding in other tools). Trust the conversation when vault signals are sparse.
 
 ## Adaptive Weights
@@ -133,7 +133,6 @@ overallScore = sum of all scores. Each maxScore = weight * 100.`;
 		policy: PromiseLandPolicy,
 		dayNumber: number
 	): string {
-		const priorityTasks = signals.tasks.filter(t => t.priority);
 		const modifiedFiles = signals.vaultActivity.modifiedFiles || [];
 
 		const contextSection = goal.context
@@ -161,7 +160,6 @@ overallScore = sum of all scores. Each maxScore = weight * 100.`;
 		return `## Locked Goal
 "${goal.text}"
 Time window: ${goal.timeWindowDays} days
-Current phase: ${goal.currentPhase}
 Day: ${dayNumber} of ${goal.timeWindowDays}
 ${contextSection}
 ## Measurement Policy (v${policy.version})
@@ -171,15 +169,11 @@ Default signal weights (adapt to goal type):
 
 ${policy.milestones.length > 0 ? `Milestones:\n${policy.milestones.map(m => `- ${m.text} (deadline: ${m.deadline}, completed: ${m.completed})`).join("\n")}` : "No milestones set yet."}
 
-${priorityTasks.length > 0
-	? `## Today's Priority Actions (${priorityTasks.length} tasks)\n\n${priorityTasks.map(t => `- [${t.completed ? "x" : " "}] ${t.title} ${t.tags.join(" ")} | effort: ${t.effort}${t.timeAnnotation ? ` | time: ${t.timeAnnotation} (${t.durationMin}min)` : ""}`).join("\n")}`
-	: "## Today's Priority Actions\n\n(Not used today — assess based on other evidence below.)"}
+## Daily Note — Full Content
 
-## Ship (${signals.ships.length} items)
+Read this carefully. Tasks, ships, progress, and reflections may appear in any format (tables, checkboxes, prose, bullet points). Understand what was accomplished from the content itself.
 
-${signals.ships.length > 0
-	? signals.ships.map(s => `- [${s.completed ? "x" : " "}] ${s.title}`).join("\n")
-	: "Nothing shipped today."}
+${signals.rawNoteContent || "(No daily note found for this date.)"}
 
 ## Vault Activity — What Changed Today (${modifiedFiles.length} files)
 
@@ -190,17 +184,13 @@ ${signals.feedback.length > 0
 	? signals.feedback.map(f => `- [${f.type}] ${f.text} ${f.tags.join(" ")}`).join("\n")
 	: "No feedback entries today."}
 
-${signals.reflections.length > 0
-	? `### Tagged Reflections (${signals.reflections.length})\n${signals.reflections.map(r => `- ${r.text}`).join("\n")}`
-	: ""}
-
 ${signals.conversationContext ? `## Conversation Context — What the User Discussed Today
 
 The following are excerpts from the user's Tinker coaching conversation on this day. This reveals work and thinking that may not be captured in the vault signals above.
 
 ${signals.conversationContext}` : "## Conversation Context\nNo Tinker conversation recorded for this day."}
 
-Produce the assessment JSON now. Evaluate ALL evidence — vault activity diffs, conversation context, ship items, and any tagged reflections. Learning can appear in ANY document — look at the diffs for documented insights, decisions, progress notes, and learnings.`;
+Produce the assessment JSON now. Evaluate ALL evidence — the daily note content, vault activity diffs, conversation context, and feedback. Read the daily note thoroughly — work items, completed tasks, shipped artifacts, and reflections can appear in any format.`;
 	}
 
 	private parseAssessResponse(

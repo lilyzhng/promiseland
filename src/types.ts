@@ -30,7 +30,7 @@ export interface ActaTaskSettings {
 	topicSortOrder: "alphabetical" | "taskCount";
 	taskSortOrder: "byFile" | "incompleteFirst";
 	anthropicApiKey: string;
-	northStarModel: string;
+	promiseLandModel: string;
 }
 
 export interface ActaTaskData {
@@ -45,14 +45,14 @@ export const DEFAULT_SETTINGS: ActaTaskSettings = {
 	topicSortOrder: "alphabetical",
 	taskSortOrder: "incompleteFirst",
 	anthropicApiKey: "",
-	northStarModel: "claude-sonnet-4-20250514",
+	promiseLandModel: "claude-sonnet-4-20250514",
 };
 
 export const DEFAULT_DATA: ActaTaskData = {
 	addedTasks: {},
 };
 
-export const ACTA_TASK_VIEW_TYPE = "northstar-board";
+export const ACTA_TASK_VIEW_TYPE = "promiseland-board";
 
 // Feedback types
 export interface FeedbackItem {
@@ -96,5 +96,5 @@ export const DEFAULT_NEGATIVE_FEEDBACK_DATA: ActaNegativeFeedbackData = {
 export const ACTA_NEGATIVE_FEEDBACK_VIEW_TYPE = "acta-negative-feedback-board";
 export const NEGATIVE_FEEDBACK_TRIGGER_TAGS = ["#😒"];
 
-// North Star types
-export const ACTA_NORTHSTAR_VIEW_TYPE = "acta-northstar-board";
+// Promise Land types
+export const ACTA_PROMISELAND_VIEW_TYPE = "acta-promiseland-board";

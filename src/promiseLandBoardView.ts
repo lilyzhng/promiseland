@@ -3,7 +3,7 @@ import { ActaTaskSettings, ACTA_PROMISELAND_VIEW_TYPE } from "./types";
 import { PromiseLandManager } from "./promiseLandManager";
 import { PromiseLandAgent } from "./promiseLandAgent";
 import { PromiseLandLlmClient } from "./promiseLandLlmClient";
-import { PromiseLandGoalModal, PromiseLandEditContextModal } from "./promiseLandGoalModal";
+import { PromiseLandGoalModal, PromiseLandEditContextModal, PromiseLandEditFolderModal } from "./promiseLandGoalModal";
 import {
 	Assessment,
 	PromiseLandGoal,
@@ -359,6 +359,20 @@ export class PromiseLandBoardView extends ItemView {
 			e.stopPropagation();
 			this.openEditContextModal(goal);
 		});
+
+		const folderLink = badges.createEl("span", {
+			cls: "acta-promiseland-goal-context-link",
+			text: `📁 ${goal.checkInFolder || "PromiseLand/check-ins"}`,
+			attr: { "aria-label": "Change check-in folder" },
+		});
+		folderLink.addEventListener("click", (e) => {
+			e.stopPropagation();
+			new PromiseLandEditFolderModal(this.app, goal.checkInFolder || "PromiseLand/check-ins", async (folder) => {
+				await this.manager.updateGoalCheckInFolder(goal.id, folder);
+				new Notice(`Check-in folder updated to: ${folder || "PromiseLand/check-ins"}`);
+				this.renderBoard();
+			}).open();
+		});
 	}
 
 	private async completeGoal(goal: PromiseLandGoal): Promise<void> {
@@ -496,8 +510,8 @@ export class PromiseLandBoardView extends ItemView {
 	}
 
 	private openGoalModal(): void {
-		new PromiseLandGoalModal(this.app, async (text, days, context) => {
-			await this.manager.addGoal(text, days, context || undefined);
+		new PromiseLandGoalModal(this.app, async (text, days, context, checkInFolder) => {
+			await this.manager.addGoal(text, days, context || undefined, checkInFolder);
 			new Notice("Promise Land goal locked in!");
 			this.renderBoard();
 		}).open();
@@ -514,7 +528,7 @@ export class PromiseLandBoardView extends ItemView {
 	// ── Check-in note creation ──
 
 	private async createCheckInNote(assessment: Assessment, goal: PromiseLandGoal, signals?: DaySignals): Promise<void> {
-		const folderPath = "PromiseLand/check-ins";
+		const folderPath = goal.checkInFolder || "PromiseLand/check-ins";
 		// Include goal name in title when multiple goals exist
 		const goalSuffix = this.manager.getGoals().length > 1
 			? ` — ${goal.text.slice(0, 40).replace(/[\\/:*?"<>|]/g, "").trim()}`
@@ -600,7 +614,7 @@ ${reasoning}`;
 		}
 
 		const content = `**Goal:** ${goal.text}
-**Day ${assessment.dayNumber} of ${goal.timeWindowDays}** | Phase: ${goal.currentPhase}
+**Day ${assessment.dayNumber} of ${goal.timeWindowDays}**
 
 ---
 
@@ -1010,12 +1024,10 @@ ${momentumMd}
 				}
 
 				this.lastObservedSignals = signals;
-				const priorityTasks = signals.tasks.filter(t => t.priority);
-				const priorityCompleted = priorityTasks.filter(t => t.completed).length;
-				const shippedCount = signals.ships.filter(s => s.completed).length;
 				const gitFileCount = signals.vaultActivity.modifiedFiles?.length || 0;
 				const convCount = signals.conversationContext ? signals.conversationContext.split("\n").length : 0;
-				const summary = `Observed for ${dateStr}: ${priorityTasks.length} priority actions (${priorityCompleted} done), ${signals.ships.length} ship items (${shippedCount} shipped), ${gitFileCount} files changed (git diff), ${signals.feedback.length} feedback, ${signals.reflections.length} reflections, ${convCount} conversation messages`;
+				const noteStatus = signals.rawNoteContent ? `${Math.round(signals.rawNoteContent.length / 1000)}k chars` : "not found";
+				const summary = `Observed for ${dateStr}: daily note (${noteStatus}), ${gitFileCount} files changed (git diff), ${signals.feedback.length} feedback, ${convCount} conversation messages`;
 				this.completeToolStep(stepEl, summary);
 				messagesEl.scrollTop = messagesEl.scrollHeight;
 				return { result: summary };
@@ -1063,7 +1075,8 @@ ${momentumMd}
 					return { result: "Error: No summary content provided." };
 				}
 
-				const folderPath = "PromiseLand/check-ins";
+				const activeGoalForFolder = this.activeGoalId ? this.manager.getGoalContext(this.activeGoalId)?.goal : null;
+				const folderPath = activeGoalForFolder?.checkInFolder || "PromiseLand/check-ins";
 				const activeGoalCtx = this.activeGoalId ? this.manager.getGoalContext(this.activeGoalId) : null;
 				const goalSuffix = activeGoalCtx && this.manager.getGoals().length > 1
 					? ` — ${activeGoalCtx.goal.text.slice(0, 40).replace(/[\\/:*?"<>|]/g, "").trim()}`
@@ -1480,7 +1493,7 @@ ${breakdownLines}`;
 			: "";
 
 		const goalBlock = `### Goal: "${goal.text}"
-Day ${dayNumber} of ${goal.timeWindowDays} | Phase: ${goal.currentPhase} | ${daysLeft}d left
+Day ${dayNumber} of ${goal.timeWindowDays} | ${daysLeft}d left
 ${contextBlock}
 Latest Assessment:
 ${assessmentBlock}`;

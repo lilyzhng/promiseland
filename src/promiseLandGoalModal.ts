@@ -4,9 +4,10 @@ export class PromiseLandGoalModal extends Modal {
 	private goalText = "";
 	private timeWindowDays = 30;
 	private goalContext = "";
-	private onSubmit: (goalText: string, timeWindowDays: number, context: string) => void;
+	private checkInFolder = "PromiseLand/check-ins";
+	private onSubmit: (goalText: string, timeWindowDays: number, context: string, checkInFolder: string) => void;
 
-	constructor(app: App, onSubmit: (goalText: string, timeWindowDays: number, context: string) => void) {
+	constructor(app: App, onSubmit: (goalText: string, timeWindowDays: number, context: string, checkInFolder: string) => void) {
 		super(app);
 		this.onSubmit = onSubmit;
 	}
@@ -48,6 +49,18 @@ export class PromiseLandGoalModal extends Modal {
 			);
 
 		new Setting(contentEl)
+			.setName("Check-in folder")
+			.setDesc("Where to save check-in notes for this goal")
+			.addText((text) =>
+				text
+					.setPlaceholder("PromiseLand/check-ins")
+					.setValue(this.checkInFolder)
+					.onChange((value) => {
+						this.checkInFolder = value.trim() || "PromiseLand/check-ins";
+					})
+			);
+
+		new Setting(contentEl)
 			.setName("Context / Reference")
 			.setDesc("Paste job postings, links, skill requirements, or any reference material that defines what this goal looks like.")
 			.addTextArea((text) =>
@@ -71,7 +84,55 @@ export class PromiseLandGoalModal extends Modal {
 					.setCta()
 					.onClick(() => {
 						if (this.goalText.trim().length === 0) return;
-						this.onSubmit(this.goalText.trim(), this.timeWindowDays, this.goalContext.trim());
+						this.onSubmit(this.goalText.trim(), this.timeWindowDays, this.goalContext.trim(), this.checkInFolder);
+						this.close();
+					})
+			);
+	}
+
+	onClose(): void {
+		this.contentEl.empty();
+	}
+}
+
+export class PromiseLandEditFolderModal extends Modal {
+	private folderValue: string;
+	private onSubmit: (folder: string) => void;
+
+	constructor(app: App, currentFolder: string, onSubmit: (folder: string) => void) {
+		super(app);
+		this.folderValue = currentFolder;
+		this.onSubmit = onSubmit;
+	}
+
+	onOpen(): void {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		contentEl.createEl("h3", { text: "Check-in Folder" });
+		contentEl.createEl("p", {
+			text: "Set the folder where check-in notes are saved for this goal.",
+			cls: "setting-item-description",
+		});
+
+		new Setting(contentEl)
+			.setName("Folder path")
+			.addText((text) =>
+				text
+					.setPlaceholder("PromiseLand/check-ins")
+					.setValue(this.folderValue)
+					.onChange((value) => {
+						this.folderValue = value;
+					})
+			);
+
+		new Setting(contentEl)
+			.addButton((btn) =>
+				btn
+					.setButtonText("Save")
+					.setCta()
+					.onClick(() => {
+						this.onSubmit(this.folderValue.trim());
 						this.close();
 					})
 			);

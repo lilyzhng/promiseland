@@ -58,6 +58,7 @@ export class PromiseLandManager {
 	async setActiveGoalId(goalId: string | null): Promise<void> {
 		this.data.activeGoalId = goalId;
 		await this.saveData();
+		await this.saveGoalsFile();
 	}
 
 	// ── Goal access ──
@@ -113,7 +114,7 @@ export class PromiseLandManager {
 		return Math.max(0, ctx.goal.timeWindowDays - this.getDayNumber(goalId) + 1);
 	}
 
-	async addGoal(text: string, timeWindowDays: number, context?: string): Promise<PromiseLandGoal> {
+	async addGoal(text: string, timeWindowDays: number, context?: string, checkInFolder?: string): Promise<PromiseLandGoal> {
 		if (this.data.goalContexts.length >= MAX_GOALS) {
 			throw new Error(`Maximum of ${MAX_GOALS} concurrent goals allowed`);
 		}
@@ -122,9 +123,9 @@ export class PromiseLandManager {
 			id: `ns-${Date.now()}`,
 			text,
 			...(context ? { context } : {}),
+			...(checkInFolder && checkInFolder !== "PromiseLand/check-ins" ? { checkInFolder } : {}),
 			timeWindowDays,
 			lockedAt: Date.now(),
-			currentPhase: "exploration",
 			active: true,
 		};
 
@@ -142,6 +143,7 @@ export class PromiseLandManager {
 
 		this.data.goalContexts.push(ctx);
 		await this.saveData();
+		await this.saveGoalsFile();
 		return goal;
 	}
 
@@ -171,6 +173,7 @@ export class PromiseLandManager {
 		this.data.goalContexts.splice(idx, 1);
 
 		await this.saveData();
+		await this.saveGoalsFile();
 	}
 
 	async updateGoalContext(goalId: string, context: string): Promise<void> {
@@ -182,6 +185,19 @@ export class PromiseLandManager {
 			delete ctx.goal.context;
 		}
 		await this.saveData();
+		await this.saveGoalsFile();
+	}
+
+	async updateGoalCheckInFolder(goalId: string, folder: string): Promise<void> {
+		const ctx = this.getGoalContext(goalId);
+		if (!ctx) throw new Error(`Goal context not found for goalId: ${goalId}`);
+		if (folder && folder !== "PromiseLand/check-ins") {
+			ctx.goal.checkInFolder = folder;
+		} else {
+			delete ctx.goal.checkInFolder;
+		}
+		await this.saveData();
+		await this.saveGoalsFile();
 	}
 
 	canAddGoal(): boolean {
@@ -208,5 +224,25 @@ export class PromiseLandManager {
 		if (!ctx) return;
 		ctx.tinkerMessages = [];
 		await this.saveData();
+	}
+
+	// ── Lightweight goals.json for external agents ──
+
+	async saveGoalsFile(): Promise<void> {
+		const goalsData = {
+			activeGoalId: this.data.activeGoalId ?? null,
+			goals: this.data.goalContexts.map(gc => ({
+				id: gc.goal.id,
+				text: gc.goal.text,
+				...(gc.goal.context ? { context: gc.goal.context } : {}),
+				timeWindowDays: gc.goal.timeWindowDays,
+				lockedAt: gc.goal.lockedAt,
+				active: gc.goal.active,
+			})),
+		};
+		await this.app.vault.adapter.write(
+			"PromiseLand/goals.json",
+			JSON.stringify(goalsData, null, 2) + "\n"
+		);
 	}
 }

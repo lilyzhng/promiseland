@@ -115,6 +115,9 @@ export default class ActaTaskPlugin extends Plugin {
 			this.promiseLandLlmClient
 		);
 
+		// Write lightweight goals.json for external agents
+		await this.promiseLandManager.saveGoalsFile();
+
 		// Register task board view
 		this.registerView(ACTA_TASK_VIEW_TYPE, (leaf) => {
 			return new TaskBoardView(
@@ -226,6 +229,9 @@ export default class ActaTaskPlugin extends Plugin {
 		});
 
 		this.addSettingTab(new ActaTaskSettingTab(this.app, this));
+
+		// Pull remote changes on startup
+		this.runGit("git pull --no-rebase origin main");
 
 		// Auto-commit on file changes (debounced 60s)
 		this.setupAutoCommit();
@@ -587,6 +593,9 @@ export default class ActaTaskPlugin extends Plugin {
 	}
 
 	private runAutoCommitAndPush(): void {
+		// Pull remote changes first to stay in sync with other agents
+		this.runGit("git pull --no-rebase origin main");
+
 		const status = this.runGit("git status --porcelain");
 		if (!status) return; // Nothing to commit
 

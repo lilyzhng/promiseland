@@ -4,9 +4,9 @@ export interface PromiseLandGoal {
 	id: string;
 	text: string;
 	context?: string;
+	checkInFolder?: string; // custom folder for check-in notes (default: "PromiseLand/check-ins")
 	timeWindowDays: number;
 	lockedAt: number; // timestamp
-	currentPhase: "exploration" | "execution" | "refinement";
 	active: boolean;
 }
 
@@ -82,6 +82,7 @@ export interface DaySignals {
 	reflections: ReflectionSignal[];
 	vaultActivity: VaultActivity;
 	conversationContext?: string; // Tinker conversation excerpts from this day
+	rawNoteContent?: string; // Full daily note content for LLM-based understanding
 }
 
 export interface SignalBreakdownItem {

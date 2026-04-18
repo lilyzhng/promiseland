@@ -23,7 +23,7 @@ class AddTaskWidget extends WidgetType {
 
 	toDOM(): HTMLElement {
 		const span = document.createElement("span");
-		span.className = "northstar-add-button";
+		span.className = "promiseland-add-button";
 		span.textContent = "+";
 		span.title = "Add to task board";
 

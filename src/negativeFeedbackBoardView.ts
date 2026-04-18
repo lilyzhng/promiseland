@@ -42,9 +42,9 @@ export class NegativeFeedbackBoardView extends ItemView {
 	async onOpen(): Promise<void> {
 		const container = this.containerEl.children[1];
 		container.empty();
-		container.addClass("northstar-container");
+		container.addClass("promiseland-container");
 
-		this.boardEl = container.createDiv({ cls: "northstar-board acta-negative-feedback-board" });
+		this.boardEl = container.createDiv({ cls: "promiseland-board acta-negative-feedback-board" });
 		await this.refresh();
 
 		this.registerEvents();
@@ -91,13 +91,13 @@ export class NegativeFeedbackBoardView extends ItemView {
 		this.boardEl.empty();
 
 		// Header
-		const header = this.boardEl.createDiv({ cls: "northstar-header" });
-		const titleRow = header.createDiv({ cls: "northstar-title-row" });
+		const header = this.boardEl.createDiv({ cls: "promiseland-header" });
+		const titleRow = header.createDiv({ cls: "promiseland-title-row" });
 
 		titleRow.createEl("h4", { text: "😒 负反馈board" });
 
 		const refreshBtn = titleRow.createEl("button", {
-			cls: "northstar-refresh-btn clickable-icon",
+			cls: "promiseland-refresh-btn clickable-icon",
 			attr: { "aria-label": "Refresh" },
 		});
 		refreshBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`;
@@ -106,21 +106,21 @@ export class NegativeFeedbackBoardView extends ItemView {
 		const totalItems = topics.reduce((sum, t) => sum + t.totalCount, 0);
 
 		header.createDiv({
-			cls: "northstar-stats",
+			cls: "promiseland-stats",
 			text: `${totalItems} items across ${topics.length} topics`,
 		});
 
 		// Empty state
 		if (topics.length === 0) {
 			this.boardEl.createDiv({
-				cls: "northstar-empty",
+				cls: "promiseland-empty",
 				text: "No 负反馈 items yet. Add notes with #😒 and a topic tag (e.g. #work) to see them here.",
 			});
 			return;
 		}
 
 		// Topic sections
-		const list = this.boardEl.createDiv({ cls: "northstar-topics" });
+		const list = this.boardEl.createDiv({ cls: "promiseland-topics" });
 		for (const topic of topics) {
 			this.renderTopicSection(list, topic);
 		}
@@ -130,25 +130,25 @@ export class NegativeFeedbackBoardView extends ItemView {
 		parent: HTMLElement,
 		topic: FeedbackGroup
 	): void {
-		const section = parent.createDiv({ cls: "northstar-topic-section" });
+		const section = parent.createDiv({ cls: "promiseland-topic-section" });
 		const isCollapsed = this.collapsedTopics.has(topic.tag);
 
 		const topicHeader = section.createDiv({
-			cls: "northstar-topic-header",
+			cls: "promiseland-topic-header",
 		});
 
 		const chevron = topicHeader.createSpan({
-			cls: `northstar-chevron ${isCollapsed ? "is-collapsed" : ""}`,
+			cls: `promiseland-chevron ${isCollapsed ? "is-collapsed" : ""}`,
 		});
 		chevron.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
 		topicHeader.createSpan({
-			cls: "northstar-topic-tag",
+			cls: "promiseland-topic-tag",
 			text: `#${topic.displayTag}`,
 		});
 
 		topicHeader.createSpan({
-			cls: "northstar-topic-count",
+			cls: "promiseland-topic-count",
 			text: `${topic.totalCount}`,
 		});
 
@@ -163,7 +163,7 @@ export class NegativeFeedbackBoardView extends ItemView {
 
 		// Render items if not collapsed
 		if (!isCollapsed) {
-			const itemList = section.createDiv({ cls: "northstar-list" });
+			const itemList = section.createDiv({ cls: "promiseland-list" });
 			for (const item of topic.items) {
 				this.renderFeedbackItem(itemList, item);
 			}
@@ -175,24 +175,24 @@ export class NegativeFeedbackBoardView extends ItemView {
 		item: FeedbackItem
 	): void {
 		const itemEl = parent.createDiv({
-			cls: "northstar-item acta-feedback-item acta-negative-feedback-item",
+			cls: "promiseland-item acta-feedback-item acta-negative-feedback-item",
 		});
 
 		// Feedback text
 		itemEl.createSpan({
-			cls: "northstar-text acta-feedback-text",
+			cls: "promiseland-text acta-feedback-text",
 			text: item.text,
 		});
 
 		// Metadata
 		if (this.settings.showSourceNote) {
 			const metaContainer = itemEl.createSpan({
-				cls: "northstar-meta",
+				cls: "promiseland-meta",
 			});
 
 			// Source note badge (clickable)
 			const badge = metaContainer.createSpan({
-				cls: "northstar-source-badge",
+				cls: "promiseland-source-badge",
 				text: item.fileName,
 			});
 
@@ -215,14 +215,14 @@ export class NegativeFeedbackBoardView extends ItemView {
 				day: "numeric",
 			});
 			metaContainer.createSpan({
-				cls: "northstar-date-badge",
+				cls: "promiseland-date-badge",
 				text: dateStr,
 			});
 		}
 
 		// Remove button
 		const removeBtn = itemEl.createSpan({
-			cls: "northstar-remove-btn",
+			cls: "promiseland-remove-btn",
 			text: "×",
 			attr: { title: "Remove from board" },
 		});

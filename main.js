@@ -589,6 +589,7 @@ var PromiseLandGoalModal = class extends import_obsidian4.Modal {
     this.goalText = "";
     this.timeWindowDays = 30;
     this.goalContext = "";
+    this.checkInFolder = "PromiseLand/check-ins";
     this.onSubmit = onSubmit;
   }
   onOpen() {
@@ -612,6 +613,11 @@ var PromiseLandGoalModal = class extends import_obsidian4.Modal {
         }
       })
     );
+    new import_obsidian4.Setting(contentEl).setName("Check-in folder").setDesc("Where to save check-in notes for this goal").addText(
+      (text) => text.setPlaceholder("PromiseLand/check-ins").setValue(this.checkInFolder).onChange((value) => {
+        this.checkInFolder = value.trim() || "PromiseLand/check-ins";
+      })
+    );
     new import_obsidian4.Setting(contentEl).setName("Context / Reference").setDesc("Paste job postings, links, skill requirements, or any reference material that defines what this goal looks like.").addTextArea(
       (text) => text.setPlaceholder("e.g., Job posting URL, required skills, key milestones...").onChange((value) => {
         this.goalContext = value;
@@ -625,7 +631,37 @@ var PromiseLandGoalModal = class extends import_obsidian4.Modal {
       (btn) => btn.setButtonText("Lock It In").setCta().onClick(() => {
         if (this.goalText.trim().length === 0)
           return;
-        this.onSubmit(this.goalText.trim(), this.timeWindowDays, this.goalContext.trim());
+        this.onSubmit(this.goalText.trim(), this.timeWindowDays, this.goalContext.trim(), this.checkInFolder);
+        this.close();
+      })
+    );
+  }
+  onClose() {
+    this.contentEl.empty();
+  }
+};
+var PromiseLandEditFolderModal = class extends import_obsidian4.Modal {
+  constructor(app, currentFolder, onSubmit) {
+    super(app);
+    this.folderValue = currentFolder;
+    this.onSubmit = onSubmit;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h3", { text: "Check-in Folder" });
+    contentEl.createEl("p", {
+      text: "Set the folder where check-in notes are saved for this goal.",
+      cls: "setting-item-description"
+    });
+    new import_obsidian4.Setting(contentEl).setName("Folder path").addText(
+      (text) => text.setPlaceholder("PromiseLand/check-ins").setValue(this.folderValue).onChange((value) => {
+        this.folderValue = value;
+      })
+    );
+    new import_obsidian4.Setting(contentEl).addButton(
+      (btn) => btn.setButtonText("Save").setCta().onClick(() => {
+        this.onSubmit(this.folderValue.trim());
         this.close();
       })
     );
@@ -947,6 +983,19 @@ var PromiseLandBoardView = class extends import_obsidian5.ItemView {
       e.stopPropagation();
       this.openEditContextModal(goal);
     });
+    const folderLink = badges.createEl("span", {
+      cls: "acta-promiseland-goal-context-link",
+      text: `\u{1F4C1} ${goal.checkInFolder || "PromiseLand/check-ins"}`,
+      attr: { "aria-label": "Change check-in folder" }
+    });
+    folderLink.addEventListener("click", (e) => {
+      e.stopPropagation();
+      new PromiseLandEditFolderModal(this.app, goal.checkInFolder || "PromiseLand/check-ins", async (folder) => {
+        await this.manager.updateGoalCheckInFolder(goal.id, folder);
+        new import_obsidian5.Notice(`Check-in folder updated to: ${folder || "PromiseLand/check-ins"}`);
+        this.renderBoard();
+      }).open();
+    });
   }
   async completeGoal(goal) {
     const confirm = window.confirm(
@@ -1068,8 +1117,8 @@ This will remove it from the active goals list. Assessment history is preserved.
     return names[category] || category;
   }
   openGoalModal() {
-    new PromiseLandGoalModal(this.app, async (text, days, context) => {
-      await this.manager.addGoal(text, days, context || void 0);
+    new PromiseLandGoalModal(this.app, async (text, days, context, checkInFolder) => {
+      await this.manager.addGoal(text, days, context || void 0, checkInFolder);
       new import_obsidian5.Notice("Promise Land goal locked in!");
       this.renderBoard();
     }).open();
@@ -1084,7 +1133,7 @@ This will remove it from the active goals list. Assessment history is preserved.
   // ── Check-in note creation ──
   async createCheckInNote(assessment, goal, signals) {
     var _a, _b;
-    const folderPath = "PromiseLand/check-ins";
+    const folderPath = goal.checkInFolder || "PromiseLand/check-ins";
     const goalSuffix = this.manager.getGoals().length > 1 ? ` \u2014 ${goal.text.slice(0, 40).replace(/[\\/:*?"<>|]/g, "").trim()}` : "";
     const filePath = `${folderPath}/Promise Land Check-in \u2014 ${assessment.date}${goalSuffix}.md`;
     if (!this.app.vault.getAbstractFileByPath(folderPath)) {
@@ -1158,7 +1207,7 @@ ${rows.join("\n")}
 `;
     }
     const content = `**Goal:** ${goal.text}
-**Day ${assessment.dayNumber} of ${goal.timeWindowDays}** | Phase: ${goal.currentPhase}
+**Day ${assessment.dayNumber} of ${goal.timeWindowDays}**
 
 ---
 
@@ -1423,7 +1472,7 @@ ${rows.join("\n")}`;
   }
   // ── Tool execution ──
   async executeTool(toolName, toolInput, messagesEl) {
-    var _a;
+    var _a, _b;
     switch (toolName) {
       case "get_today_date": {
         const today = this.getLocalDateStr();
@@ -1493,12 +1542,10 @@ LATE-NIGHT NOTE: It's past midnight (${currentHour}:00). The user might want to 
           }
         }
         this.lastObservedSignals = signals;
-        const priorityTasks = signals.tasks.filter((t) => t.priority);
-        const priorityCompleted = priorityTasks.filter((t) => t.completed).length;
-        const shippedCount = signals.ships.filter((s) => s.completed).length;
         const gitFileCount = ((_a = signals.vaultActivity.modifiedFiles) == null ? void 0 : _a.length) || 0;
         const convCount = signals.conversationContext ? signals.conversationContext.split("\n").length : 0;
-        const summary = `Observed for ${dateStr}: ${priorityTasks.length} priority actions (${priorityCompleted} done), ${signals.ships.length} ship items (${shippedCount} shipped), ${gitFileCount} files changed (git diff), ${signals.feedback.length} feedback, ${signals.reflections.length} reflections, ${convCount} conversation messages`;
+        const noteStatus = signals.rawNoteContent ? `${Math.round(signals.rawNoteContent.length / 1e3)}k chars` : "not found";
+        const summary = `Observed for ${dateStr}: daily note (${noteStatus}), ${gitFileCount} files changed (git diff), ${signals.feedback.length} feedback, ${convCount} conversation messages`;
         this.completeToolStep(stepEl, summary);
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return { result: summary };
@@ -1532,7 +1579,8 @@ LATE-NIGHT NOTE: It's past midnight (${currentHour}:00). The user might want to 
         if (!summary) {
           return { result: "Error: No summary content provided." };
         }
-        const folderPath = "PromiseLand/check-ins";
+        const activeGoalForFolder = this.activeGoalId ? (_b = this.manager.getGoalContext(this.activeGoalId)) == null ? void 0 : _b.goal : null;
+        const folderPath = (activeGoalForFolder == null ? void 0 : activeGoalForFolder.checkInFolder) || "PromiseLand/check-ins";
         const activeGoalCtx = this.activeGoalId ? this.manager.getGoalContext(this.activeGoalId) : null;
         const goalSuffix = activeGoalCtx && this.manager.getGoals().length > 1 ? ` \u2014 ${activeGoalCtx.goal.text.slice(0, 40).replace(/[\\/:*?"<>|]/g, "").trim()}` : "";
         const filePath = `${folderPath}/Promise Land Check-in \u2014 ${dateStr}${goalSuffix}.md`;
@@ -1881,7 +1929,7 @@ Reference Context:
 ${goal.context}
 ` : "";
     const goalBlock = `### Goal: "${goal.text}"
-Day ${dayNumber} of ${goal.timeWindowDays} | Phase: ${goal.currentPhase} | ${daysLeft}d left
+Day ${dayNumber} of ${goal.timeWindowDays} | ${daysLeft}d left
 ${contextBlock}
 Latest Assessment:
 ${assessmentBlock}`;
@@ -2828,6 +2876,7 @@ var PromiseLandManager = class {
   async setActiveGoalId(goalId) {
     this.data.activeGoalId = goalId;
     await this.saveData();
+    await this.saveGoalsFile();
   }
   // ── Goal access ──
   getGoals() {
@@ -2878,7 +2927,7 @@ var PromiseLandManager = class {
       return 0;
     return Math.max(0, ctx.goal.timeWindowDays - this.getDayNumber(goalId) + 1);
   }
-  async addGoal(text, timeWindowDays, context) {
+  async addGoal(text, timeWindowDays, context, checkInFolder) {
     if (this.data.goalContexts.length >= MAX_GOALS) {
       throw new Error(`Maximum of ${MAX_GOALS} concurrent goals allowed`);
     }
@@ -2886,9 +2935,9 @@ var PromiseLandManager = class {
       id: `ns-${Date.now()}`,
       text,
       ...context ? { context } : {},
+      ...checkInFolder && checkInFolder !== "PromiseLand/check-ins" ? { checkInFolder } : {},
       timeWindowDays,
       lockedAt: Date.now(),
-      currentPhase: "exploration",
       active: true
     };
     const ctx = {
@@ -2904,6 +2953,7 @@ var PromiseLandManager = class {
     };
     this.data.goalContexts.push(ctx);
     await this.saveData();
+    await this.saveGoalsFile();
     return goal;
   }
   async addAssessment(goalId, assessment) {
@@ -2929,6 +2979,7 @@ var PromiseLandManager = class {
     this.data.archivedGoals.push(ctx.goal);
     this.data.goalContexts.splice(idx, 1);
     await this.saveData();
+    await this.saveGoalsFile();
   }
   async updateGoalContext(goalId, context) {
     const ctx = this.getGoalContext(goalId);
@@ -2940,6 +2991,19 @@ var PromiseLandManager = class {
       delete ctx.goal.context;
     }
     await this.saveData();
+    await this.saveGoalsFile();
+  }
+  async updateGoalCheckInFolder(goalId, folder) {
+    const ctx = this.getGoalContext(goalId);
+    if (!ctx)
+      throw new Error(`Goal context not found for goalId: ${goalId}`);
+    if (folder && folder !== "PromiseLand/check-ins") {
+      ctx.goal.checkInFolder = folder;
+    } else {
+      delete ctx.goal.checkInFolder;
+    }
+    await this.saveData();
+    await this.saveGoalsFile();
   }
   canAddGoal() {
     return this.data.goalContexts.length < MAX_GOALS;
@@ -2964,6 +3028,25 @@ var PromiseLandManager = class {
       return;
     ctx.tinkerMessages = [];
     await this.saveData();
+  }
+  // ── Lightweight goals.json for external agents ──
+  async saveGoalsFile() {
+    var _a;
+    const goalsData = {
+      activeGoalId: (_a = this.data.activeGoalId) != null ? _a : null,
+      goals: this.data.goalContexts.map((gc) => ({
+        id: gc.goal.id,
+        text: gc.goal.text,
+        ...gc.goal.context ? { context: gc.goal.context } : {},
+        timeWindowDays: gc.goal.timeWindowDays,
+        lockedAt: gc.goal.lockedAt,
+        active: gc.goal.active
+      }))
+    };
+    await this.app.vault.adapter.write(
+      "PromiseLand/goals.json",
+      JSON.stringify(goalsData, null, 2) + "\n"
+    );
   }
 };
 
@@ -3116,15 +3199,10 @@ var PromiseLandObserver = class {
     onStep == null ? void 0 : onStep("checkpoint", "Ensuring daily git checkpoint...");
     this.ensureDailyCheckpoint(dateStr);
     onStep == null ? void 0 : onStep("checkpoint", `Daily checkpoint ready`);
-    onStep == null ? void 0 : onStep("tasks", "Scanning daily note for priority actions...");
-    const tasks = await this.extractPriorityTasksFromNote(dateStr);
-    const completedCount = tasks.filter((t) => t.completed).length;
-    const deepWorkCount = tasks.filter((t) => t.effort === "deep_work").length;
-    onStep == null ? void 0 : onStep("tasks", `Found ${tasks.length} priority actions (${completedCount} completed, ${deepWorkCount} deep work)`);
-    onStep == null ? void 0 : onStep("ships", "Scanning daily note for ships...");
-    const ships = await this.extractShipsFromNote(dateStr);
-    const shippedCount = ships.filter((s) => s.completed).length;
-    onStep == null ? void 0 : onStep("ships", `Found ${ships.length} ships (${shippedCount} shipped)`);
+    onStep == null ? void 0 : onStep("daily-note", "Reading daily note content...");
+    const rawNoteContent = await this.readDailyNoteContent(dateStr);
+    const noteLength = rawNoteContent ? rawNoteContent.length : 0;
+    onStep == null ? void 0 : onStep("daily-note", noteLength > 0 ? `Read daily note (${Math.round(noteLength / 1e3)}k chars)` : `No daily note found for ${dateStr}`);
     onStep == null ? void 0 : onStep("positive-feedback", "Scanning positive feedback...");
     const positiveFeedback = this.extractPositiveFeedbackSignals(dateStr);
     onStep == null ? void 0 : onStep("positive-feedback", `Found ${positiveFeedback.length} positive feedback entries`);
@@ -3132,9 +3210,6 @@ var PromiseLandObserver = class {
     const negativeFeedback = this.extractNegativeFeedbackSignals(dateStr);
     onStep == null ? void 0 : onStep("negative-feedback", `Found ${negativeFeedback.length} negative feedback entries`);
     const feedback = [...positiveFeedback, ...negativeFeedback];
-    onStep == null ? void 0 : onStep("reflections", "Scanning #promiseland reflections...");
-    const reflections = await this.extractReflections(dateStr);
-    onStep == null ? void 0 : onStep("reflections", `Found ${reflections.length} reflections`);
     onStep == null ? void 0 : onStep("vault", "Checking vault activity...");
     const vaultActivity = this.getVaultActivity(dateStr);
     onStep == null ? void 0 : onStep("vault", `${vaultActivity.filesModified} files modified today across ${vaultActivity.foldersActive.length} folders`);
@@ -3153,12 +3228,30 @@ ${fileList}`);
     vaultActivity.modifiedFiles = modifiedFiles;
     return {
       date: dateStr,
-      tasks,
-      ships,
+      tasks: [],
+      ships: [],
       feedback,
-      reflections,
-      vaultActivity
+      reflections: [],
+      vaultActivity,
+      rawNoteContent: rawNoteContent || void 0
     };
+  }
+  /**
+   * Read the full daily note content. The LLM will extract signals from it.
+   */
+  async readDailyNoteContent(dateStr) {
+    const compactDate = dateStr.replace(/-/g, "");
+    const files = this.app.vault.getMarkdownFiles();
+    for (const file of files) {
+      if (!file.path.includes(compactDate))
+        continue;
+      const content = await this.app.vault.cachedRead(file);
+      if (content.length > 15e3) {
+        return content.substring(0, 15e3) + "\n\n... (note truncated at 15k chars)";
+      }
+      return content;
+    }
+    return null;
   }
   /**
    * Read priority tasks directly from the daily note's "Today's Priority Actions" section.
@@ -3246,6 +3339,22 @@ ${fileList}`);
             const title = checkboxMatch[2].replace(/#\w+/g, "").replace(/\[\[.*?\]\]/g, "").replace(/\[.*?\]\(.*?\)/g, "").replace(/\s+/g, " ").trim();
             if (title.length > 0) {
               ships.push({ title, completed });
+            }
+          }
+          if (!checkboxMatch && line.startsWith("|") && !line.match(/^\|\s*[-:]+/) && !line.match(/^\|\s*#\s*\|/)) {
+            const cells = line.split("|").slice(1, -1).map((c) => c.trim());
+            if (cells.length >= 4) {
+              const taskCell = cells[1];
+              const statusCell = cells[3];
+              const isCompleted = /✅|shipped|done|complete/i.test(statusCell);
+              const isFailed = /❌|failed|crashed/i.test(statusCell);
+              const isDropped = /🚫|dropped|skipped/i.test(statusCell);
+              if (isCompleted || isFailed || isDropped) {
+                const title = taskCell.replace(/`/g, "").replace(/#\w+/g, "").replace(/\[\[.*?\]\]/g, "").replace(/\[.*?\]\(.*?\)/g, "").replace(/\s+/g, " ").trim();
+                if (title.length > 0) {
+                  ships.push({ title, completed: isCompleted });
+                }
+              }
             }
           }
         }
@@ -3648,9 +3757,9 @@ The user's philosophy is **Build -> Ship, Repeat**. Score today's alignment on e
 ## Evidence Sources
 
 You will receive:
-- PRIORITY ACTIONS \u2014 tasks the user set for today (may be empty)
-- SHIP ITEMS \u2014 things explicitly marked as shipped
-- VAULT ACTIVITY \u2014 git diffs showing file changes
+- DAILY NOTE \u2014 the user's full daily note. Read it carefully. Tasks, ships, progress, and reflections may appear in ANY format: checkboxes, tables, bullet points, prose, or mixed. Extract what was accomplished by understanding the content, not by looking for a specific format.
+- VAULT ACTIVITY \u2014 git diffs showing file changes across the vault
+- FEEDBACK \u2014 positive/negative feedback entries
 - CONVERSATION CONTEXT \u2014 excerpts from Tinker coaching chat. This is critical \u2014 it captures work outside the vault (demos, submissions, coding in other tools). Trust the conversation when vault signals are sparse.
 
 ## Adaptive Weights
@@ -3689,7 +3798,6 @@ You MUST respond with valid JSON only:
 overallScore = sum of all scores. Each maxScore = weight * 100.`;
   }
   buildAssessUserMessage(goal, signals, policy, dayNumber) {
-    const priorityTasks = signals.tasks.filter((t) => t.priority);
     const modifiedFiles = signals.vaultActivity.modifiedFiles || [];
     const contextSection = goal.context ? `
 ## Goal Context
@@ -3715,7 +3823,6 @@ ${diffBlock}`;
     return `## Locked Goal
 "${goal.text}"
 Time window: ${goal.timeWindowDays} days
-Current phase: ${goal.currentPhase}
 Day: ${dayNumber} of ${goal.timeWindowDays}
 ${contextSection}
 ## Measurement Policy (v${policy.version})
@@ -3726,13 +3833,11 @@ Default signal weights (adapt to goal type):
 ${policy.milestones.length > 0 ? `Milestones:
 ${policy.milestones.map((m) => `- ${m.text} (deadline: ${m.deadline}, completed: ${m.completed})`).join("\n")}` : "No milestones set yet."}
 
-${priorityTasks.length > 0 ? `## Today's Priority Actions (${priorityTasks.length} tasks)
+## Daily Note \u2014 Full Content
 
-${priorityTasks.map((t) => `- [${t.completed ? "x" : " "}] ${t.title} ${t.tags.join(" ")} | effort: ${t.effort}${t.timeAnnotation ? ` | time: ${t.timeAnnotation} (${t.durationMin}min)` : ""}`).join("\n")}` : "## Today's Priority Actions\n\n(Not used today \u2014 assess based on other evidence below.)"}
+Read this carefully. Tasks, ships, progress, and reflections may appear in any format (tables, checkboxes, prose, bullet points). Understand what was accomplished from the content itself.
 
-## Ship (${signals.ships.length} items)
-
-${signals.ships.length > 0 ? signals.ships.map((s) => `- [${s.completed ? "x" : " "}] ${s.title}`).join("\n") : "Nothing shipped today."}
+${signals.rawNoteContent || "(No daily note found for this date.)"}
 
 ## Vault Activity \u2014 What Changed Today (${modifiedFiles.length} files)
 
@@ -3741,16 +3846,13 @@ ${vaultActivitySection}
 ### Feedback (${signals.feedback.length})
 ${signals.feedback.length > 0 ? signals.feedback.map((f) => `- [${f.type}] ${f.text} ${f.tags.join(" ")}`).join("\n") : "No feedback entries today."}
 
-${signals.reflections.length > 0 ? `### Tagged Reflections (${signals.reflections.length})
-${signals.reflections.map((r) => `- ${r.text}`).join("\n")}` : ""}
-
 ${signals.conversationContext ? `## Conversation Context \u2014 What the User Discussed Today
 
 The following are excerpts from the user's Tinker coaching conversation on this day. This reveals work and thinking that may not be captured in the vault signals above.
 
 ${signals.conversationContext}` : "## Conversation Context\nNo Tinker conversation recorded for this day."}
 
-Produce the assessment JSON now. Evaluate ALL evidence \u2014 vault activity diffs, conversation context, ship items, and any tagged reflections. Learning can appear in ANY document \u2014 look at the diffs for documented insights, decisions, progress notes, and learnings.`;
+Produce the assessment JSON now. Evaluate ALL evidence \u2014 the daily note content, vault activity diffs, conversation context, and feedback. Read the daily note thoroughly \u2014 work items, completed tasks, shipped artifacts, and reflections can appear in any format.`;
   }
   parseAssessResponse(raw, dateStr, dayNumber, signals, policyVersion, goalId) {
     let jsonStr = raw.trim();
@@ -3857,6 +3959,7 @@ var ActaTaskPlugin = class extends import_obsidian13.Plugin {
       this.promiseLandObserver,
       this.promiseLandLlmClient
     );
+    await this.promiseLandManager.saveGoalsFile();
     this.registerView(ACTA_TASK_VIEW_TYPE, (leaf) => {
       return new TaskBoardView(
         leaf,
@@ -3944,6 +4047,7 @@ var ActaTaskPlugin = class extends import_obsidian13.Plugin {
       callback: () => this.refreshPromiseLandBoard()
     });
     this.addSettingTab(new ActaTaskSettingTab(this.app, this));
+    this.runGit("git pull --no-rebase origin main");
     this.setupAutoCommit();
     this.setupDateStamping();
   }
@@ -4273,6 +4377,7 @@ var ActaTaskPlugin = class extends import_obsidian13.Plugin {
     );
   }
   runAutoCommitAndPush() {
+    this.runGit("git pull --no-rebase origin main");
     const status = this.runGit("git status --porcelain");
     if (!status)
       return;
